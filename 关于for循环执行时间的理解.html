@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+	<title>for循环执行时间的相关理解（关于li数列点击显示不同i值的问题）</title>
+  <style type="text/css">
+  body{font-family: "Microsoft YaHei"; background: #eee; margin: 0;}
+  article{width: 80%; margin: 0 auto; background: #fff; padding: 15px;box-shadow: 0 0 3px #888;}
+  p{text-indent: 2em;}
+  textarea{width: 80%; height: 500px; }
+  </style>
+	<script type="text/javascript">
+
+		
+	</script>
+</head>
+<body>
+
+       <div>0</div>
+       <div>1</div>
+       <div>2</div>
+
+       <script>
+       var iAa= document.getElementsByTagName("div");
+       var i=0;
+       var nump;
+       var len=iAa.length; //3
+       
+		function num(nump){
+
+              	alert(nump);
+              	console.log(nump);
+
+              }
+
+       for(i=0;i<len;i++){
+       		nump = i;
+            iAa[i].onclick = num(nump);
+              
+       }
+
+       document.write("nihao");
+
+       console.log(124);
+       alert(007);
+       </script>
+
+       <article>
+       <h2>for循环执行时间的相关理解（关于li数列点击显示不同i值的问题）</h2>
+       <ol>
+       <li>浏览器加载到js脚本时，首先将全局的变量声明和函数声明（不包括匿名函数）先读取一遍。这个阶段只读取声明，不包括变量在等号后的赋值。</li>
+       <li>浏览器逐行读取js脚本（html、css也均为按顺序逐行读取）、存储各个变量的值、并实现所有全局语句的效果。但若某函数只有声明尚未执行，则无法读取到内部信息，也无法执行。</li>
+       <li>因此，若某函数在for循环中声明，但未在for循环中执行，那么当浏览器加载读取到for循环时，只会执行for循环中可以执行的部分，i值也会在循环结束后变为最终值。该函数内部即使含有i值，由于函数本身尚未执行、不会创建执行环境，此时函数内部的i不会被赋值。</li>
+       <li>然后，当该函数在后续某个地方被调用执行时，该函数的作用域链向外追溯的i值就是for循环结束之后的i值（最终值）。</li>
+       <li>因为上述原理，"for循环中直接自执行函数"和“for循环中设定函数执行条件、但浏览器加载for循环阶段尚不执行、后续再触发执行”两者之间显示出的i值会有所不同。</li>
+       <li>总结：从上述分析可以看出，js的for循环因为没有块级作用域，函数在其内部声明与在其外部声明并无区别。执行时（如果不是浏览器加载循环的阶段执行），若声明阶段没有用参数形式将循环中不同阶段的值复制到参数上，那么函数读取的外部变量均为循环结束后的最终值，无法读取到不同循环次数下的for循环内变量的临时值。</li>
+       </ol>
+
+       <textarea>
+          //公共代码
+         var iAa= document.getElementsByTagName("div");
+         var i=0;
+         var nump;
+         var len=iAa.length;
+
+         //情形1：
+         function num(nump){
+                alert(nump);
+                console.log(nump);
+
+              }
+         for(i=0;i<len;i++){
+          nump = i;
+            iAa[i].onclick = num(nump); //加载页面阶段，在for循环中自执行，因此会在加载阶段接连跳出0、1、2的提示
+          }
+
+          //情形2：
+          for(i=0;i<len;i++){
+          nump = i;
+            iAa[i].onclick = function(){alert(i)}; //加载页面阶段，此匿名函数在for循环中不执行。在页面加载完成后i值为3。点击触发事件时，不论点击哪个div，该函数内部的i向外追溯作用域时找到的变量对象中，i值都是最终的3。（虽然点击第一个div时确实触发的是iAa[0].onclick，但函数内部的i追溯不到这个i=0的值。因为页面加载阶段，for循环执行完毕后，相当于已经将循环句式拆成了多个情况判定句，即：
+                nump = 0;
+                iAa[0].onclick=function(){alert(i)};
+                nump = 1;
+                iAa[1].onclick=function(){alert(i)};
+                nump = 2;
+                iAa[2].onclick=function(){alert(i)};
+                可以认为，此时已经不存在iAa[i]这个动态序列。
+              若是在加载过程中赋值，由于函数执行时的外部环境变量对象的i值还刚刚被赋值到相应的循环次数，因此函数内部读取到的是对应的i值，不过这实际上也是读取外部变量对象的最终值，只是当前外部变量对象和页面加载完成后的外部变量对象不一样。）
+          }
+          
+          说了这么多，感觉关键的核心点表达得还不够清晰。
+          应该说，函数执行时，读取作用域链中的外部变量对象，其中的所有变量都是最终值。之所以for循环中的“自执行”和“点击触发执行”弹出的数字不一样，是因为在循环中自执行时浏览器还没有读取全部js脚本，因此此时函数的外部变量对象并随着每次循环执行还都在变化，函数执行时的外部各变量的“最终值”也在变化。而一旦最终页面加载完成，所有外部变量有一个最后的最终值，因此点击触发时取的就是这个值。
+          也因此，点击触发事件时，外部变量在这一行触发代码后的赋值也是起效的。就像上面的例子里，即使函数里写的是alert(nump)，并且调用iAa[0].onclick=function(){alert(nump)};，该函数读取的nump也不会是nump = 0;，而是整个外部页面中nump的最终取值。
+
+
+
+
+       </textarea>
+       <p>最终再明确一遍的是，想理解作用域链和外部变量对象的取值，重点是一定要记住浏览器加载的顺序、和语句执行的时机。普通语句在加载时按顺序执行，而函数在只声明但还未达成触发条件时，可以视为其内部代码处于被忽略状态。当触发到该函数时，认清此刻的外部环境对象对于这个函数是最关键的，此时如果脚本已加载完毕，不论这个函数触发语句写在哪一行（因为写在它后面的外部语句此时也都读取完毕了），就需要将所有变量按全脚本最后的值确认。如果函数触发在脚本加载阶段，那就需要注意函数触发时，页面加载到了哪一行，此行以上的外部变量赋值是生效的，下方因为尚未加载，赋值还未生效。</p>
+
+       </article>
+
+
+</body>
+</html>
