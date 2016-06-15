@@ -1,4 +1,4 @@
-Ajax与Comet
+# Ajax与Comet
 
 	Ajax是Asynchronous JavaScript + XML缩写。能够向服务器请求额外的数据而无需卸载页面，会带来更好的用户体验。
 
