@@ -1,6 +1,5 @@
 # Ajax与Comet
 
-<style type="text/css">body{font-family: "Microsoft YaHei"}h1,h2,h3,h4,h5,h6,p, a, li{font-family: "Microsoft YaHei"!important;}</style>
 
 >	Ajax是Asynchronous JavaScript + XML缩写。能够向服务器请求额外的数据而无需卸载页面，会带来更好的用户体验。
 
