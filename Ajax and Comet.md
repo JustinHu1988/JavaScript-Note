@@ -3,7 +3,7 @@
 
 >	Ajax是Asynchronous JavaScript + XML缩写。能够向服务器请求额外的数据而无需卸载页面，会带来更好的用户体验。
 
->>	Ajax技术的核心是XMLHttpRequest对象（XHR对象）。
+>	Ajax技术的核心是XMLHttpRequest对象（XHR对象）。
 
 >	可以使用XHR对象取得新数据，然后再通过DOM将新数据插入到页面中。虽然名字中包含XML的成分，但Ajax通信与数据格式无关，这种技术无需刷新页面即可从服务器取得数据，但不一定是XML数据。
 
@@ -15,7 +15,6 @@
 ### 20.11 XHR的用法
 	
 ####1. 使用XHR对象时，要调用的第一个方法是`open()`。  
-	
 >	接受3个参数：
 >>	1. 要发送请求的类型（"get""post"等）  
 >>	2. 请求的URL
