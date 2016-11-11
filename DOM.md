@@ -1,73 +1,81 @@
-DOM
+#DOM
 
-10.1 节点层次
-	DOM可以将任何HTML或XML文档描绘成一个由多节点构成的结构。节点分为几种不同的类型，每种类型分别表示文档中不同的信息或标记。每个节点都拥有各自的特点。
+##10.1 节点层次
+DOM可以将任何HTML或XML文档描绘成一个由多节点构成的结构。节点分为几种不同的类型，每种类型分别表示文档中不同的信息或标记。每个节点都拥有各自的特点。
 
-	文档节点（Document）是每个文档的根节点。
-	html中，文档节点的子节点是<html>元素，即文档元素，也是整个文档的最外层元素。
-	Xml中，没有预定义的元素，因此任何元素都可能成为文档元素。
+文档节点（Document）是每个文档的根节点。
+html中，文档节点的子节点是<html>元素，即文档元素，也是整个文档的最外层元素。
+Xml中，没有预定义的元素，因此任何元素都可能成为文档元素。
 
-	HTML元素通过元素节点表示，特性（attribute）通过特性节点表示，文档类型通过文档类型节点表示，而注释则通过注释节点表示。
-	总共有12种节点类型。都承自一个基类型。
+HTML元素通过元素节点表示，特性（attribute）通过特性节点表示，文档类型通过文档类型节点表示，而注释则通过注释节点表示。
+总共有12种节点类型。都承自一个基类型。
 
-	10.11 Node类型
-		JavaScript中的所有节点类型都继承自Node类型，因此所有节点类型都共享着相同的基本属性和方法。
-		每个节点都有一个nodeType属性，用于表明节点的类型。
+###10.11 Node类型
+JavaScript中的所有节点类型都继承自Node类型，因此所有节点类型共享相同的基本属性和方法。
+每个节点都有一个nodeType属性，用于表明节点的类型。
 
-		节点类型：在Node类型中定义的下列12个数值常量来表示：
-			1. Node.ELEMENT_NODE(1);
-			2. Node.ATTRIBUTE_NODE(2);
-			3. Node.TEXT_NODE(3);
-			4. Node.CDATA_SECTION_NODE(4);
-			5. Node.ENTITY_REFERENCE_NODE(5);
-			6. Node.ENTITY_NODE(6);
-			7. Node.PROCESSING_INSTRUCTION_NODE(7);
-			8. Node.COMMENT_NODE(8);
-			9. Node.DOCUMENT_NODE(9);
-			10. Node.DOCUMENT_TYPE_NODE(10);
-			11. Node.DOCUMENT_FRAGMENT_NODE(11);
-			12. Node.NOTATION_NODE(12);
+节点类型：在Node类型中定义的下列12个数值常量来表示：
+1. Node.ELEMENT_NODE  (1);
+2. Node.ATTRIBUTE_NODE  (2);
+3. Node.TEXT_NODE  (3);
+4. Node.CDATA_SECTION_NODE  (4);
+5. Node.ENTITY_REFERENCE_NODE  (5);
+6. Node.ENTITY_NODE  (6);
+7. Node.PROCESSING_INSTRUCTION_NODE  (7);
+8. Node.COMMENT_NODE  (8);
+9. Node.DOCUMENT_NODE  (9);
+10. Node.DOCUMENT_TYPE_NODE  (10);
+11. Node.DOCUMENT_FRAGMENT_NODE  (11);
+12. Node.NOTATION_NODE  (12);
 
-		检测节点类型：nodeType属性
-			有两种判定方式：
-			1）	if(someNode.nodeType == Node.ELEMENT_NODE){ //IE中无效，建议将nodeType属性和数字值比较
-					alert("Node is an element.");
-				}
-			2）	if(someNode.nodeType == 1){
-					alert("Node is an element.")
-				}
+**检测节点类型：nodeType属性**
+有两种判定方式：
+```javascript
+	//1
+	if(someNode.nodeType == Node.ELEMENT_NODE){ //IE中无效，建议将nodeType属性和数字值比较
+		alert("Node is an element.");
+	}
+	//2
+	if(someNode.nodeType == 1){ //适用于所有浏览器
+		alert("Node is an element.")
+	}
+```
 
-		1. nodeName和nodeValue属性
-			这两个属性的值取决于节点的类型。
-			对于元素节点，nodeName中保存的始终是元素标签名，而nodeValue的值则为null。
+####1. nodeName和nodeValue属性
+	这两个属性的值取决于节点的类型。
+	对于元素节点，nodeName中保存的始终是元素标签名，而nodeValue的值则为null。
 
-		2. 节点关系
-			childNodes属性：里面保存着Nodelist对象。
-				1）NodeList：一种类数组对象，用于保存一组有序的节点。可以通过方括号语法来访问NodeList的值，也有length属性，不过它并不是Array的实例。NodeList实际上是基于DOM结构动态执行查询的结果，因此DOM结构的变化能够自动反应在NodeList对象中。
-				2）访问保存在NodeList中的节点：(1)方括号、(2)item()方法。
-					var firstChild = someNode.childNodes[0];
-					var secondChild = someNode.childNodes.item(1);
-					var count = someNode.childNodes.length; //表示的是访问NodeList的那一刻，其中包含的节点数量
+####2. 节点关系
+childNodes属性：里面保存着Nodelist对象。
+	1）NodeList：一种类数组对象，用于保存一组有序的节点。可以通过方括号语法来访问NodeList的值，也有length属性，不过它并不是Array的实例。NodeList实际上是基于DOM结构动态执行查询的结果，因此DOM结构的变化能够自动反应在NodeList对象中。
+	2）访问保存在NodeList中的节点：(1)方括号、(2)item()方法。
+```javascript
+		var firstChild = someNode.childNodes[0];
+		var secondChild = someNode.childNodes.item(1);
+		var count = someNode.childNodes.length; //表示的是访问NodeList的那一刻，其中包含的节点数量
+```
 
-					将NodeList对象转换为数组：
-						*对arguments对象使用 Array.prototype.slice()方法可以将其转换为数组。//？？这个怎么写
-						采用同样的方法，可以将NodeList对象转换为数组。
-							例：
-							var arrayOfNodes = Array.prototype.slice.call(someNode.childNodes,0);
-						//IE8之前，将NodeList实现为一个COM对象，因此NodeList转换为数组，必须手动枚举。
-							function convertToArray(nodes){
-								var array = null;
-								try{
-									array = Array.prototype.slice.call(nodes,0); //针对非IE浏览器
-								} catch(ex){
-									array = new Array();
-									for(var i=0, len=nodes.length; i<len; i++){
-										array.push(nodes[i]);
-									}
-								}
-								return array;
-							}
-							convertToArray(someNode.childNodes);
+将NodeList对象转换为数组：
+	*对arguments对象使用 Array.prototype.slice()方法可以将其转换为数组。//？？这个怎么写
+	采用同样的方法，可以将NodeList对象转换为数组。
+	例：
+```javascript
+	var arrayOfNodes = Array.prototype.slice.call(someNode.childNodes,0);
+	//IE8之前，将NodeList实现为一个COM对象，因此NodeList转换为数组，必须手动枚举。
+	function convertToArray(nodes){
+		var array = null;
+		try{
+			array = Array.prototype.slice.call(nodes,0); //针对非IE浏览器
+		} catch(ex){
+			array = new Array();
+			for(var i=0, len=nodes.length; i<len; i++){
+				array.push(nodes[i]);
+			}
+		}
+		return array;
+	}
+	convertToArray(someNode.childNodes);
+```
 
 			parentNode属性：该属性指向父节点。
 
@@ -85,7 +93,7 @@ DOM
 
 			//注：并不是每种类型都有子节点。
 
-		3. 操作节点
+####3. 操作节点
 			appendChild(); 向childNodes列表的末尾添加一个节点。添加节点后，childNodes的新增节点、父节点以及最后一个子节点的关系指针都会相应更新。最后，appendChild()返回新增的节点。
 				例：
 					var returnedNode = someNode.appendChild(newNode);
@@ -103,7 +111,7 @@ DOM
 			removeChild(); 参数：将要移除的节点。
 							返回被移除的节点。
 
-		4. 其他方法
+####4. 其他方法
 			有两个方法是所有节点都有的：cloneNode()和normalize()
 
 			cloneNode();  参数：一个布尔值，表示是否执行深复制。参数为true时执行深复制（复制整个节点树），false时执行浅复制（只复制节点本身）。
