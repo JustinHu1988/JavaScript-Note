@@ -15,6 +15,7 @@ JavaScript中的所有节点类型都继承自Node类型，因此所有节点类
 每个节点都有一个nodeType属性，用于表明节点的类型。
 
 节点类型：在Node类型中定义的下列12个数值常量来表示：
+
 1. Node.ELEMENT_NODE  (1);
 2. Node.ATTRIBUTE_NODE  (2);
 3. Node.TEXT_NODE  (3);
