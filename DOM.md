@@ -51,15 +51,16 @@ childNodes属性：里面保存着Nodelist对象。
 	1）NodeList：一种类数组对象，用于保存一组有序的节点。可以通过方括号语法来访问NodeList的值，也有length属性，不过它并不是Array的实例。NodeList实际上是基于DOM结构动态执行查询的结果，因此DOM结构的变化能够自动反应在NodeList对象中。
 	2）访问保存在NodeList中的节点：(1)方括号、(2)item()方法。
 ```javascript
-		var firstChild = someNode.childNodes[0];
-		var secondChild = someNode.childNodes.item(1);
-		var count = someNode.childNodes.length; //表示的是访问NodeList的那一刻，其中包含的节点数量
+	var firstChild = someNode.childNodes[0];
+	var secondChild = someNode.childNodes.item(1);
+	var count = someNode.childNodes.length; //表示的是访问NodeList的那一刻，其中包含的节点数量
 ```
 
 将NodeList对象转换为数组：
-	*对arguments对象使用 Array.prototype.slice()方法可以将其转换为数组。//？？这个怎么写
-	采用同样的方法，可以将NodeList对象转换为数组。
-	例：
+
+*对arguments对象使用 Array.prototype.slice()方法可以将其转换为数组。//？？这个怎么写
+
+采用同样的方法，可以将NodeList对象转换为数组。例：
 ```javascript
 	var arrayOfNodes = Array.prototype.slice.call(someNode.childNodes,0);
 	//IE8之前，将NodeList实现为一个COM对象，因此NodeList转换为数组，必须手动枚举。
