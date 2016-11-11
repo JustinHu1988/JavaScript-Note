@@ -29,7 +29,7 @@ JavaScript中的所有节点类型都继承自Node类型，因此所有节点类
 11. Node.DOCUMENT_FRAGMENT_NODE  (11);
 12. Node.NOTATION_NODE  (12);
 
-**检测节点类型：nodeType属性**
+**检测节点类型：nodeType属性** 
 有两种判定方式：
 ```javascript
 	//1
