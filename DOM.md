@@ -43,8 +43,8 @@ JavaScript中的所有节点类型都继承自Node类型，因此所有节点类
 ```
 
 ####1. nodeName和nodeValue属性
-	这两个属性的值取决于节点的类型。
-	对于元素节点，nodeName中保存的始终是元素标签名，而nodeValue的值则为null。
+这两个属性的值取决于节点的类型。
+对于元素节点，nodeName中保存的始终是元素标签名，而nodeValue的值则为null。
 
 ####2. 节点关系
 childNodes属性：里面保存着Nodelist对象。
