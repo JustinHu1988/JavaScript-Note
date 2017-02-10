@@ -1,6 +1,6 @@
 ## Document
 
-- `**document.characterSet**` (read-only)
+- **`document.characterSet`** (read-only)
     Returns the character set being used by the document.
 - `**document.doctype**` (read-only)
     Returns the Document Type Definition (DTD) of the current document.
