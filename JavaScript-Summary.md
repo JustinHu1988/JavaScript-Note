@@ -11,9 +11,18 @@
     
 - **`document.documentURI`** (read-only)  
     Returns the document location as a string.
-    
-- **`document.domain Read only`**  
+
+- **`document.URL`** (read-only)  
+    Returns the document location as a string.
+```javascript
+console.log(document.documentURI === document.URL);  // true
+```
+
+- **`document.domain`** (read-only)  
      Returns the domain of the current document.
+
+- **`document.location`** (read-only)  
+     Returns a Location object, which contains information about the URL of the document and provides methods for changing that URL and loading another URL. Though `document.location` is a read-only Location object, you can also assign a DOMString to it. This means that you can work with document.location as if it were a string in most cases: `document.location = 'http://www.example.com'` is a synonym of `document.location.href = 'http://www.example.com'`.
     
 - **`document.implementation`** (read-only)  
     Returns the DOM implementation associated with the current document.
@@ -59,8 +68,11 @@
 - **`document.images`** (read-only)  (get HTMLCollection)
     Returns a list of the images in the current document.
 
+- **`document.links`** (read-only)  (get HTMLCollection)
+    Returns a list of all the hyperlinks in the document.
 
-
+- **`document.lastModified`** (read-only)
+    Returns the date on which the document was last modified.
 
 
 
