@@ -9,8 +9,9 @@
 
 
 ## 21.1 创建XMLHttpRequest对象
-
-	var xhr = new XMLHttpRequest();
+```javascript
+var xhr = new XMLHttpRequest();
+```
 
 ### 20.11 XHR的用法
 	
