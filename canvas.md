@@ -406,3 +406,168 @@ function draw() {
 
 
 # Drawing text
+
+####  `fillText(text, x, y [, maxWidth])`
+Fills a given text at the given (x,y) position. Optionally with a maximum width to draw.
+Example:
+```javascript
+function draw(){
+    var ctx = document.getElementById("canvas").getContext('2d');
+    ctx.font = '48px serif';
+    ctx.fillText('Hello world', 10, 50);
+}
+```
+
+#### `strokeText(text, x, y [, maxWidth])`
+Strokes a given text at the given (x,y) position. Optionally with a maximum width to draw.
+```javascript
+function draw(){
+    var ctx = document.getElementById("canvas").getContext('2d');
+    ctx.font = '48px serif';
+    ctx.strokeText('Hello world', 10, 50);
+}
+```
+
+### Styling text
+#### `font = value`
+This string uses the same syntax as the CSS font property.
+
+#### `textAlign = value`
+`start`(default), `end`, `left`, `right` or `center`.
+
+#### `textBaseline = value`
+
+#### `direction = value`
+`ltr`, `rtl`, `inherit`(default).
+
+### Advanced text measurements
+#### `measureText()` ???
+Returns a TextMetrics object containing the width, in pixels, that the specified text will be when drawn in the current text style.
+
+
+# Using images
+Importing images into a canvas is basically a two step process:
+
+1. Get a reference to an HTMLImageElement object or to another canvas element as a source. It is also possible to use images by providing a URL.
+2. Draw the image on the canvas using the `drawImage()` function.
+
+## Getting images to draw
+The canvas API is able to use any of the following data types as an image source:
+#### `HTMLImageElement`
+These are images created using the `Image()` constructor, as well as any `<img>` element.
+#### `HTMLVideoElement`
+Using an HTML `<video>` element as your image source grabs the current frame from the video and uses it as an image.
+#### `HTMLCanvasElement`
+You can use another `<canvas>` element as your image source.
+
+These sources are collectively referred to by the type `CanvasImageSource`.
+
+There are several ways to get images for use on a canvas:
+### 1. Using images from the same page
+- `document.images`
+- `document.getElementsByTagName()`
+- `document.getElementById()`
+
+### 2. Using images from other domains ???
+Using the crossorigin attribute of an `<img>` element (reflected by the HTMLImageElement.crossOrigin property), you can request permission to load an image from another domain for use in your call to drawImage(). If the hosting domain permits cross-domain access to the image, the image can be used in your canvas without tainting it; otherwise using the image will taint the canvas.
+
+### 3. Using other canvas elements
+Just as with normal images, we access other canvas elements using either the `document.getElementsByTagName()` or `document.getElementById()` method. Be sure you've drawn something to the source canvas before using it in your target canvas.
+
+One of the more practical uses of this would be to use a second canvas element as a thumbnail view of the other larger canvas.
+
+### 4. Creating an image from scratch
+Another option is to create new `HTMLImageElement` objects in our script.
+To do this, you can use the convenient `Image()` constructor:
+```javascript
+var img = new Image();
+img.src = "myImage.png"; // Set source path, When this script gets executed, the image starts loading.
+```
+When this script gets executed, the image starts loading.
+
+If you try to call `drawImage()` before the image has finished loading, it won't do anything. So you need to be sure to use the load event so you don't try this before the image has loaded:
+```javascript
+var img = new Image();  // create new img element
+img.addEventListener('load', function(){
+    // execute drawImage statements here
+}, false);
+img.src = 'myImage.png';    // set source path
+```
+
+**If you're only using one extenal image this can be a good approach, but once you need to track more than one we need to resort to something more clever. It's beyond the scope of this tutorial to look at image pre-loading tactics, but you should keep that in mind.**
+
+### 5. Embedding an image via `data: URL`
+Another possible way to include images is via the `data: url`. Data URLs allow you to completely define an image as a Base64 encoded string of characters directly in your code.
+```javascript
+var img = new Image();
+img.src = 'data:image/gif;base64,R0lGODlhCwALAIAAAAAA3pn/ZiH5BAEAAAEALAAAAAALAAsAAAIUhA+hkcuO4lmNVindo7qyrIXiGBYAOw==';
+```
+One advantage of data URLs is that the resulting image is available immediately without another round trip to the server. Another potential advantage is that it is also possible to encapsulate in one file all of your CSS, JavaScript, HTML, and images, making it more portable to other locations.
+
+Some disadvantages of this method are that your image is not cached, and for larger images the encoded url can become quite long.
+
+### 6. Using frames from a video
+You can also use frames from a video being presented by a `<video>` element (even if the video is not visible).  For example, if you have a `<video>` element with the ID "myvideo", you can do this:
+```javascript
+function getMyVideo(){
+    var canvas = document.getElementById('canvas');
+    if(canvas.getContext){
+        var ctx = canvas.getContext('2d');
+        return document.getElementById('myvideo');
+    }
+}
+```
+This returns the HTMLVideoElement object for the video, which, as covered earlier, is one of the objects that can be used as a CanvasImageSource.
+
+
+## Drawing images
+
+Once we have a reference to our source image object we can use the `drawImage()` method to render it to the canvas. As we will see later the the `drawImage()` method is overloaded and has several variants. In its most basic form it looks like this:
+
+#### `drawImage(image, x, y)`
+Draws the CanvasImageSource specified by the image parameter at the coordinates (x, y).
+
+> SVG images must specify a width and height in the root <svg> element.
+
+Example:
+```javascript
+function draw(){
+    var ctx = document.getElementById('canvas').getContext('2d');
+    var img = new Image();
+    img.onload = function(){
+        ctx.drawImage(img, 0, 0);
+        ctx.beginPath();
+        ctx.moveTo(30,96);
+        ctx.lineTo(70,66);
+        ctx.lineTo(103, 76);
+        ctx.lineTo(170, 15);
+        ctx.stroke();
+    };
+    img.src = 'https://mdn.mozillademos.org/files/5395/backdrop.png';
+}
+```
+
+## Scaling
+The second variant of the `drawImage()` method adds two new parameters and lets us place scaled images on the canvas.
+
+`drawImage(image, x, y, width, height)`
+This adds the width and height parameters, which indicate the size to which to scale the image when drawing it onto the canvas.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
