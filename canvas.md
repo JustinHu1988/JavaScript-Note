@@ -377,12 +377,32 @@ var ptrn = ctx.createPattern(img, 'repeat');
 
 
 ## Shadows
-####
+
+#### `shadowOffsetX = float`
+
+#### `shadowOffsetY = float`
+
+#### `shadowBlur = float`
+
+#### `shadowColor = color`
+
+## Canvas fill rules ???
+When using `fill` (or `clip` and `isPointinPath`) you can optionally provide a fill rule algorithm by which to determine if a point is inside or outside a path and thus if it gets filled or not. This is useful when a path intersects itself or is nested.
+
+Two values are possible:
+
+- "nonzero": The non-zero winding rule, which is the default rule.
+- "evenodd": The even-odd winding rule.
+
+```javascript
+function draw() {
+  var ctx = document.getElementById('canvas').getContext('2d'); 
+  ctx.beginPath(); 
+  ctx.arc(50, 50, 30, 0, Math.PI * 2, true);
+  ctx.arc(50, 50, 15, 0, Math.PI * 2, true);
+  ctx.fill('evenodd');
+}
+```
 
 
-
-
-
-
-
-
+# Drawing text
