@@ -1,6 +1,6 @@
 `canvas` is an HTML element which can be used to draw graphics using scripting (usually JavaScript).
 
-##The <canvas> element
+# The `<canvas>` element
 
 ```html
 <canvas id="tutorial" width="150" height="150"></canvas>
@@ -235,16 +235,149 @@ function draw() {
 
 ## Line Styles
 
+#### `lineWidth = value`
+Sets the width of lines drawn in the future.
+
+#### `lineCap = type`
+Sets the appearance of the ends of lines.
+```javascript
+ctx.lineCap = "butt";
+ctx.lineCap = "round";
+ctx.lineCap = "square";
+```
+
+#### `lineJoin = type`
+Sets the appearance of the "corners" where lines meet.
+```javascript
+ctx.lineJoin = "bevel";
+ctx.lineJoin = "round";
+ctx.lineJoin = "miter";
+```
+
+#### `miterLimit = value` ???
+Establishes a limit on the miter when two lines join at a sharp angle, to let you control how thick the junction becomes.
+
+#### `setLineDash(segments)`
+Sets the current line dash pattern.
+```html
+<canvas id="canvas1"></canvas>
+```
+```javascript
+var canvas=document.getElementById("canvas1");
+var ctx=canvas.getContext("2d");
+ctx.setLineDash([5,15]);
+ctx.beginPath();
+ctx.moveTo(0,100);
+ctx.lineTo(400,100);
+ctx.stroke();
+```
+
+#### `getLineDash()`
+Returns the current line dash pattern array containing an even number of non-negative numbers.
+
+#### `#### lineDashOffset = value`
+Specifies where to start a dash array on a line.
 
 
 
+## Gradients
+Just like any normal drawing program, we can fill and stroke shapes using linear and radial gradients. 
+
+We create a `CanvasGradient` object by using one of the following methods. We can then assign this object to the `fillStyle` or `strokeStyle` properties.
+
+#### `createLinearGradient(x1, y1, x2, y2)`
+Creates a linear gradient object with a starting point of (x1, y1) and an end point of (x2, y2).
+#### `createRadialGradient(x1, y1, r1, x2, y2, r2)`
+Creates a radial gradient. The parameters represent two circles, one with its center at (x1, y1) and a radius of r1, and the other with its center at (x2, y2) with a radius of r2.
+
+Once we've created a CanvasGradient object we can assign colors to it by using the addColorStop() method.
+
+#### `gradient.addColorStop(position, color)`
+Creates a new color stop on the gradient object. The position is a number between 0.0 and 1.0 and defines the relative position of the color in the gradient.
+
+Example:
+```javascript
+function draw() {
+  var ctx = document.getElementById('canvas').getContext('2d');
+
+  // Create gradients
+  var lingrad = ctx.createLinearGradient(0, 0, 0, 150);
+  lingrad.addColorStop(0, '#00ABEB');
+  lingrad.addColorStop(0.5, '#fff');
+  lingrad.addColorStop(0.5, '#26C000');
+  lingrad.addColorStop(1, '#fff');
+
+  var lingrad2 = ctx.createLinearGradient(0, 50, 0, 95);
+  lingrad2.addColorStop(0.5, '#000');
+  lingrad2.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+  // assign gradients to fill and stroke styles
+  ctx.fillStyle = lingrad;
+  ctx.strokeStyle = lingrad2;
+  
+  // draw shapes
+  ctx.fillRect(10, 10, 130, 130);
+  ctx.strokeRect(50, 50, 50, 50);
+
+}
+```
+
+Example:
+```javascript
+function draw() {
+  var ctx = document.getElementById('canvas').getContext('2d');
+
+  // Create gradients
+  var radgrad = ctx.createRadialGradient(45, 45, 10, 52, 50, 30);
+  radgrad.addColorStop(0, '#A7D30C');
+  radgrad.addColorStop(0.9, '#019F62');
+  radgrad.addColorStop(1, 'rgba(1, 159, 98, 0)');
+  
+  var radgrad2 = ctx.createRadialGradient(105, 105, 20, 112, 120, 50);
+  radgrad2.addColorStop(0, '#FF5F98');
+  radgrad2.addColorStop(0.75, '#FF0188');
+  radgrad2.addColorStop(1, 'rgba(255, 1, 136, 0)');
+
+  var radgrad3 = ctx.createRadialGradient(95, 15, 15, 102, 20, 40);
+  radgrad3.addColorStop(0, '#00C9FF');
+  radgrad3.addColorStop(0.8, '#00B5E2');
+  radgrad3.addColorStop(1, 'rgba(0, 201, 255, 0)');
+
+  var radgrad4 = ctx.createRadialGradient(0, 150, 50, 0, 140, 90);
+  radgrad4.addColorStop(0, '#F4F201');
+  radgrad4.addColorStop(0.8, '#E4C700');
+  radgrad4.addColorStop(1, 'rgba(228, 199, 0, 0)');
+  
+  // draw shapes
+  ctx.fillStyle = radgrad4;
+  ctx.fillRect(0, 0, 150, 150);
+  ctx.fillStyle = radgrad3;
+  ctx.fillRect(0, 0, 150, 150);
+  ctx.fillStyle = radgrad2;
+  ctx.fillRect(0, 0, 150, 150);
+  ctx.fillStyle = radgrad;
+  ctx.fillRect(0, 0, 150, 150);
+}
+```
 
 
+## Patterns
+#### `createPattern(image,type)`
+Creates and returns a new canvas pattern object. `image` is a CanvasImageSource, `type` is a string indicating how to use the image(`repeat`,`repeat-x`,`repeat-y`,`no-repeat`).
+
+We use this method to create a CanvasPattern object which is very similar to the gradient methods we've seen above. Once we've created a pattern, we can assign it to the `fillStyle` or `strokeStyle` properties.
+
+```javascript
+var img = new Image();
+img.src = 'someimage.png';
+var ptrn = ctx.createPattern(img, 'repeat');
+```
+
+>Note: Like with the `drawImage()` method, you must make sure the image you use is loaded before calling this method or the pattern may be drawn incorrectly.
 
 
-
-
-
+## Shadows
+####
 
 
 
