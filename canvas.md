@@ -547,23 +547,89 @@ function draw(){
 }
 ```
 
-## Scaling
+#### Scaling: `drawImage(image, x, y, width, height)`
 The second variant of the `drawImage()` method adds two new parameters and lets us place scaled images on the canvas.
 
-`drawImage(image, x, y, width, height)`
 This adds the width and height parameters, which indicate the size to which to scale the image when drawing it onto the canvas.
+```javascript
+function draw() {
+  var ctx = document.getElementById('canvas').getContext('2d');
+  var img = new Image();
+  img.onload = function() {
+    for (var i = 0; i < 4; i++) {
+      for (var j = 0; j < 3; j++) {
+        ctx.drawImage(img, j * 50, i * 38, 50, 38);
+      }
+    }
+  };
+  img.src = 'https://mdn.mozillademos.org/files/5397/rhino.jpg';
+}
+```
+
+#### Slicing: `drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)`
+The third and last variant of the `drawImage()` method has eight parameters in addition to the image source. It lets us cut out a section of the source image, then scale and draw it on our canvas.
+
+Given an `image`, this function takes the area of the source image specified by the rectangle whose top-left corner is (sx, sy) and whose width and height are sWidth and sHeight and draws it into the canvas, placing it on the canvas at (dx, dy) and scaling it to the size specified by dWidth and dHeight.
+
+Slicing can be a useful tool when you want to make compositions. You could have all elements in a single image file and use this method to composite a complete drawing. For instance, if you want to make a chart you could have a PNG image containing all the necessary text in a single file and depending on your data could change the scale of your chart fairly easily. Another advantage is that you don't need to load every image individually, which can improve load performance.
+
+#### Controlling image scaling behavior
+As mentioned previously, scaling images can result in fuzzy or blocky artifacts due to the scaling process. You can use the drawing context's `imageSmoothingEnabled` property to control the use of image smoothing algorithms when scaling images within your context. By default, this is true, meaning images will be smoothed when scaled. You can disable this feature like this:
+```javascript
+ctx.mozImageSmoothingEnabled = false;
+ctx.webkitImageSmoothingEnabled = false;
+ctx.msImageSmoothingEnabled = false;
+ctx.imageSmoothingEnabled = false;
+```
 
 
+# Transformations
+Before we look at the transformation methods, let's look at two other methods which are indispensable once you start generating ever more complex drawings.
+
+#### `save()`
+Saves the entire state of the canvas.
+
+#### `restore()`
+Restores the most recently saved canvas state.
+
+Canvas states are stored on a stack. Every time the `save()` method is called, the current drawing state is pushed onto the stack.
+
+**A drawing state consists of:**
+
+- The transformations that have been applied.
+- The current values of the following attributes:
+    `strokeStyle`, `fillStyle`, `globalAlpha`, `lineWidth`, `lineCap`, `lineJoin`, `miterLimit`, `lineDashOffset`, `shadowOffsetX`, `shadowOffsetY`, `shadowBlur`, `shadowColor`, `globalCompositeOperation`, `font`, `textAlign`, `textBaseline`, `direction`, `imageSmoothingEnabled`.
+- The current `clipping path`, which we'll see in the next section.
+
+You can call the `save()` method as many times as you like. Each time the `restore()` method is called, the last saved state is popped off the stack and all saved settings are restored.
 
 
+## Translating
+
+#### `translate(x,y)`
+Moves the canvas and its origin on the grid. `x` indicates the horizontal distance to move, and `y` indicates how far to move the grid vertically.
+
+**It's a good idea to save the canvas state before doing any transformations. In most cases, it is just easier to call the restore method than having to do a reverse translation to return to the original state. Also if you're translating inside a loop and don't save and restore the canvas state, you might end up missing part of your drawing, because it was drawn outside the canvas edge.**
+
+## Rotating
+#### `rotate(angle)`
+Rotates the canvas clockwise around the current origin by the angle number of radians.
+
+The rotation center point is always the canvas origin. To change the center point, we will need to move the canvas by using the `translate()` method.
+
+## Scaling
+#### `scale(x,y)`
+Scales the canvas units by x horizontally and by y vertically. Both parameters are real numbers. Values that are smaller than 1.0 reduce the unit size and values above 1.0 increase the unit size. Values of 1.0 leave the units the same size.
+
+Using negative numbers you can do axis mirroring (for example using translate(0,canvas.height); scale(1,-1); you will have the well-known Cartesian coordinate system, with the origin in the bottom left corner).
+
+By default, one unit on the canvas is exactly one pixel. If we apply, for instance, a scaling factor of 0.5, the resulting unit would become 0.5 pixels and so shapes would be drawn at half size. In a similar way setting the scaling factor to 2.0 would increase the unit size and one unit now becomes two pixels. This results in shapes being drawn twice as large.
 
 
+## Transforms
+Finally, the following transformation methods allow modifications directly to the transformation matrix.
 
-
-
-
-
-
+#### `transform(a,b,c,d,e,f)`
 
 
 

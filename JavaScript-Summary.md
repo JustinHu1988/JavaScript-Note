@@ -118,7 +118,33 @@ Many event targets (including elements, documents, and windows) also support set
 
 
 
+# Node
+A *Node* is an interface from which a number of DOM types inherit, and allows these various types to be treated similarly.
 
+The following interfaces all inherit from Node its methods and properties: `Document`, `Element`, `CharacterData` (which `Text`, `Comment`, and `CDATASection` inherit), `ProcessingInstruction`, `DocumentFragment`, `DocumentType`, `Notation`, `Entity`, `EntityReference`.
+
+These interfaces may return null in particular cases where the methods and properties are not relevant. They may throw an exception - for example when adding children to a node type for which no children can exist.
+
+## Properties
+
+
+
+
+
+
+
+
+
+# Element
+
+### `Element.getAttribute(attName)`
+`getAttribute()` returns the value of a specified attribute on the element. If the given attribute does not exist, the value returned will either be `null` or `""`.
+
+### `Element.hasAttribute(attName)`
+Returns a Boolean value indicating whether the specified element has the specified attribute or not.
+ 
+### `Element.setAttribute(attName, value)`
+Adds a new attribute or changes the value of an existing attribute on the specified element. Returns undefined.
 
 
 
