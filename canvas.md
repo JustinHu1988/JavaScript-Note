@@ -630,6 +630,116 @@ By default, one unit on the canvas is exactly one pixel. If we apply, for instan
 Finally, the following transformation methods allow modifications directly to the transformation matrix.
 
 #### `transform(a,b,c,d,e,f)`
+The parameters of this function are:
+
+`a (m11)`
+Horizontal scaling.
+`b (m12)`
+Horizontal skewing.
+`c (m21)`
+Vertical skewing.
+`d (m22)`
+Vertical scaling.
+`e (dx)`
+Horizontal moving.
+`f (dy)`
+Vertical moving.
+
+#### `setTransform(a, b, c, d, e, f)`
+
+#### `resetTransform()`
+Resets the current transform to the identity matrix. This is the same as calling: `ctx.setTransform(1, 0, 0, 1, 0, 0);`
+
+
+# Compositing and clipping
+## Compositing
+#### `globalCompositeOperation = type`
+This sets the type of compositing operation to apply when drawing new shapes, where type is a string identifying which of the twelve compositing operations to use.
+
+- source-over: (default)
+- source-in
+- source-out
+- source-atop
+- destination-over
+- destination-in
+- destination-out
+- destination-atop
+- lighter
+- copy
+- xor
+- multiply
+- screen
+- overlay
+- darken
+- lighten
+- color-dodge
+- color-burn
+- hard-light
+- soft-light
+- difference
+- exclusion
+- hue
+- saturation
+- color
+- luminosity
+
+## Clipping paths
+A clipping path is like a normal canvas shape but it acts as a mask to hide unwanted parts of shapes.
+
+If we compare clipping paths to the globalCompositeOperation property we've seen above, we see two compositing modes that achieve more or less the same effect in `source-in` and `source-atop`. The most important differences between the two are that clipping paths are never actually drawn to the canvas and the clipping path is never affected by adding new shapes. This makes clipping paths ideal for drawing multiple shapes in a restricted area.
+
+In the chapter about drawing shapes I only mentioned the `stroke()` and `fill()` methods, but there's a third method we can use with paths, called `clip()`.
+
+#### `clip()`
+Turns the path currently being built into the current clipping path.
+
+You use `clip()` instead of `closePath()` to close a path and turn it into a clipping path instead of stroking or filling the path.
+
+By default the `<canvas>` element has a clipping path that's the exact same size as the canvas itself.
+
+
+# Basic animations
+Probably the biggest limitation is, that once a shape gets drawn, it stays that way. If we need to move it we have to redraw it and everything that was drawn before it. It takes a lot of time to redraw complex frames and the performance depends highly on the speed of the computer it's running on.
+
+## Basic animation steps
+These are the steps you need to take to draw a frame:
+
+1. Clear the canvas
+    Unless the shapes you'll be drawing fill the complete canvas, you need to clear any shapes that have been drawn previously. The easiest way to do this is using the `clearRect()` method.
+2. Save the canvas state
+    If you're changing any setting (such as styles, transformations, etc.) which affect the canvas state and you want to make sure the original state is used each time a frame is drawn, you need to save that original state.
+3. Draw animated shapes
+    The step where you do the actual frame rendering.
+4. Restore the canvas state
+    If you've saved the state, restore it before drawing a new frame.
+
+## Controlling an animation
+Shapes are drawn to the canvas by using the canvas methods directly or by calling custom functions. In normal circumstances, we only see these results appear on the canvas when the script finishes executing. For instance, it isn't possible to do an animation from within a `for` loop.
+
+That means we need a way to execute our drawing functions over a period of time. There are two ways to control an animation like this.
+
+### Scheduled updates
+There are three functions which can be used to call a specific function over a set period of time:
+#### `setInterval(function, delay)`
+#### `setTimeout(function, delay)`
+#### `requestAnimationFrame(callback)`
+Tell the browser that you wish to perform an animation and requests that the browser call a specified function to update an animation before the next repaint.
+
+If you don't want any user interaction you can use the `setInterval()` function which repeatedly executes the supplied code. If we wanted to make a game, we could use keyboard or mouse events to control the animation and use `setTimeout()`. By setting `EventListeners`, we catch any user interaction and execute our animation functions.
+
+## A animated solar system
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
