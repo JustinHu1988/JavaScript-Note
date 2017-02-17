@@ -727,7 +727,8 @@ Tell the browser that you wish to perform an animation and requests that the bro
 
 If you don't want any user interaction you can use the `setInterval()` function which repeatedly executes the supplied code. If we wanted to make a game, we could use keyboard or mouse events to control the animation and use `setTimeout()`. By setting `EventListeners`, we catch any user interaction and execute our animation functions.
 
-## A animated solar system
+# Advanced animations
+## Drawing a ball
 
 
 
