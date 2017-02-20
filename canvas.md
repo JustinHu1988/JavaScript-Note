@@ -731,6 +731,143 @@ If you don't want any user interaction you can use the `setInterval()` function 
 ## Drawing a ball
 
 
+# Pixel manipulation with canvas
+The ImageData object represents the underlying pixel data of an area of a canvas object. It contains the following read-only attributes:
+
+- `width`: The width of the image in pixels.
+- `height`: The height of the image in pixels.
+- `data`: A `Unit8ClampedArray` representing a one-dimensional array containing the data in the RGBA order, with integer values between 0 and 255(included).
+
+The data property returns a Unit8ClampedArray which can be accessed to look at the raw pixel data.
+
+> **Uint8ClampedArray**: The Unit8ClampedArray contains height*width*4bytes of data, with index values ranging from 0 to (height*width*4)-1.
+
+For example, to read the blue component's value from the pixel at column 200, row 50 in the image, you would do the following:
+```javascript
+blueComponent = imageData.data[(50*imageData.width*4) + (200*4) + 3 - 1];
+```
+
+You may access the size of the pixel array in bytes by reading the `Uint8ClampedArray.length` attribute:
+```javascript
+var numBytes = imageData.data.length;
+```
+
+## Creating an ImageData object
+
+```javascript
+var myImageData = ctx.createImageData(width, height);
+```
+
+This creates a new ImageData object with the specified dimensions. All pixels are preset to transparent black.
+
+You can also create a new ImageData object with the same dimensions as the object specified by anotherImageData.
+```javascript
+var myImageData = ctx.createImageData(anotherImageData);
+```
+
+## Getting the pixel data for a context
+```javascript
+var myImageData = ctx.getImageData(left, top width, height);
+```
+> Any pixels outside the canvas are returned as transparent black in the resulting ImageData object.
+
+## Painting pixel data into a context
+You can use the `putImageData()` method to paint pixel data into a context:
+```javascript
+ctx.putImageData(myImageData, dx, dy);
+```
+
+## Saving images
+The HTMLCanvasElement provides a `toDataURL()` method, which is useful when saving images. It returns a data URI containing a representation of the image in the format specified by the type parameter (defaults to PNG). The returned images is in a resolution of 96 dpi.
+```javascript
+canvas.toDataURL('image/png');
+canvas.toDataURL('image/jpeg', quality);
+```
+
+Once you have generated a data URI from you canvas, you are able to use it as the source of any `<image>` or put it into a hyper link with a download attribute to save it to disc.
+
+# Hit regions and accessibility ???
+The canvas element on its own is just a bitmap and does not provide information about any drawn object.
+Canvas content is not exposed to accessibility tools like semantic HTML is. In general, you should avoid using canvas in an accessible website or app. The following guidelines can help to make it more accessible.
+
+
+The hit region API allows you define an area of your canvas and provides another possibility to expose interactive content on a canvas to accessibility tools. It allows you to make hit detection easier and lets you route events to DOM elements.  The API has the following three methods:
+
+**`addHitRegion()`**
+Adds a hit region to the canvas.
+**`removeHitRegion()`**
+Removes the hit region with the specified id from the canvas.
+**`clearHitRegions()`**
+Removes all hit regions from the canvas.
+
+You can add a hit region to your path and check for the `MouseEvent.region` property to test if your mouse is hitting your region, for example:
+```html
+<canvas id='canvas'></canvas>
+<script>
+var canvas=document.getElementById('canvas');
+var ctx=canvas.getContext('2d');
+
+ctx.beginPath();
+ctx.arc(70,80,10,0,1*Math.PI,false);
+ctx.fill();
+ctx.addHitRegion({id:'circle'});
+
+canvas.addEventListener('mousemove', function(event){
+    if(event.region){
+        alert('hit region: ' + event.region);
+    }
+});
+</script>
+```
+
+## Focus rings
+
+
+# Optimizing canvas
+This article aims to provide suggestions for optimizing your use of the canvas element, to ensure that your Web site or app performs well.
+
+## Performance tips
+### Pre-render similar primitives or repeating objects on an off-screen canvas
+If you find yourself with complex drawing operations on each frame, consider creating an offscreen canvas, draw to it once (or whenever it changes) on the offscreen canvas, then on each frame draw the offscreen canvas.
+```javascript
+myEntity.offscreenCanvas = document.createElement('canvas');
+myEntity.offscreenCanvas.width = myEntity.width;
+myEntity.offscreenCanvas.height = myEntity.height;
+myEntity.offscreenContext = myEntity.offscreenCanvas.getContext('2d');
+
+myEntity.render(myEntity.offscreenContext);
+```
+
+### Avoid floating-point coordinates and use integers instead
+Sub-pixel rendering occurs when you render objects on a canvas without whole values. This causes the browser to do extra calculations to create the anti-aliasing effect. To avoid this, make sure to round all co-ordinates used in calls to `drawImage()` using Math.floor().
+
+### Don't scale images in drawImage
+Cache various sizes of your images on an offscreen canvas when loading as opposed to constantly scaling them in drawImage().
+
+### Use multiple layered canvases for complex scenes
+You may find you have some elements that are frequently changing and moving around whereas other things (like UI) never change. An optimization in this situation is to create layers using multiple canvas elements.
+
+### CSS for large background images
+If like most games you have a static background image, use a plain `<div>` element with a CSS `background` property and position it under the canvas. This will avoid drawing a large image to the canvas on every tick.
+
+### Scaling canvas using CSS transforms
+CSS transforms are faster by using the GPU. Best case is to not scale the canvas or have a smaller canvas and scale up rather than a bigger canvas ans scale down. 
+For example:
+```javascript
+var scaleX = window.innerWidth / canvas.width;
+var scaleY = window.innerHeight / canvas.height;
+var scaleToFit = Math.min(scaleX, scaleY);
+var scaleToCover = Math.max(scaleX, scaleY);
+stage.style.transformOrigin = '0 0'; // scale from top left
+stage.style.transform = 'scale(' + scaleToFit + ')';
+```
+
+### Use the 
+
+
+
+
+# Manipulating
 
 
 
