@@ -13,7 +13,7 @@ In this chapter, you will:
 - Modify WebGL variables that affect your scene
 - Load and examine a fully-functional scene
 
-### rendering
+### about rendering
 1. **software-based rendering** : the calculations required to render 3D scenes are performed using the computer's main processor, its CPU.
 2. **hardware-based rendering** : a Graphics Processing Unit(GPU) will perform 3D graphics computations in real time.
 
@@ -25,10 +25,19 @@ Hardware-based rendering is much more efficient.
 ## Structure of a WebGL application
 We need certain components to be present to create a 3D scene. The components we are referring to are as follows:
 
-- Canvas: placeholder
-- Objects: These are the 3D entitlies that make up part of the scene. These entities are composed of triangles. In chapter 2, we will see how WebGL handles geometry. We will use WebGL **buffers** to store polygonal data and we will see how WebGL uses these buffers to render the objects in the scene.
+- **Canvas**: placeholder
+- **Objects**: These are the 3D entitlies that make up part of the scene. These entities are composed of triangles. In chapter 2, we will see how WebGL handles geometry. We will use WebGL **buffers** to store polygonal data and we will see how WebGL uses these buffers to render the objects in the scene.
+- **Lights**: WebGL uses **shaders** to model lights in the scene.
+- **Camera**: The canvas acts as the viewport to the 3D world.
 
 
+### Creating an HTML5 canvas / Accessing a WebGL context
+See `example 001`.
+We need to create a JavaScript function that will check whether a WebGL context can be obtained for the canvas or not.
+
+
+## WebGL is a state machine
+A WebGL context can be understood as a state machine: once you modify any of its attributes, that modification is permanent until you modify that attribute again. At any point you can query the state of these attributes and so you can determine the current state of your WebGL context.
 
 
 
