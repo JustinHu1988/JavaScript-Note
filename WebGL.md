@@ -1,7 +1,32 @@
-# WebGL
 
+# Getting started with WebGL
 WebGL programs consist of control code written in JavaScript and special effects code (shader code) that is executed on a computer's Graphics Processing Unit(GPU). 
 
+WebGL was originally based on OpenGL ES 2.0, the OpenGL specification version for devices such as iPhone and iPad.
+
+In this chapter, you will:
+
+- Understand the structure of a WebGL application
+- Set up you drawing area (canvas)
+- Test your browser's WebGL capabilities
+- Understand that WebGL acts as a state machine
+- Modify WebGL variables that affect your scene
+- Load and examine a fully-functional scene
+
+### rendering
+1. **software-based rendering** : the calculations required to render 3D scenes are performed using the computer's main processor, its CPU.
+2. **hardware-based rendering** : a Graphics Processing Unit(GPU) will perform 3D graphics computations in real time.
+
+Hardware-based rendering is much more efficient.
+
+1. server-based rendering
+2. client-based rendering
+
+## Structure of a WebGL application
+We need certain components to be present to create a 3D scene. The components we are referring to are as follows:
+
+- Canvas: placeholder
+- Objects: These are the 3D entitlies that make up part of the scene. These entities are composed of triangles. In chapter 2, we will see how WebGL handles geometry. We will use WebGL **buffers** to store polygonal data and we will see how WebGL uses these buffers to render the objects in the scene.
 
 
 
