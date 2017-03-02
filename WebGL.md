@@ -1,5 +1,5 @@
 
-# Getting started with WebGL
+# 1. Getting started with WebGL
 WebGL programs consist of control code written in JavaScript and special effects code (shader code) that is executed on a computer's Graphics Processing Unit(GPU). 
 
 WebGL was originally based on OpenGL ES 2.0, the OpenGL specification version for devices such as iPhone and iPad.
@@ -39,6 +39,9 @@ We need to create a JavaScript function that will check whether a WebGL context 
 ## WebGL is a state machine
 A WebGL context can be understood as a state machine: once you modify any of its attributes, that modification is permanent until you modify that attribute again. At any point you can query the state of these attributes and so you can determine the current state of your WebGL context.
 
+### The basic element for a scene
+canvas, objects, lights, and camera.
+
 
 
 ### Resizing the WebGL context
@@ -53,4 +56,32 @@ gl.viewport(0,0,canvas.width, canvas.height);
 ```
 
 A canvas will experience scaling when it is rendered at a different resolution than its CSS style makes it occupy on the display. Resizing with CSS is mostly useful to save resources by rendering at a low resolution and allowing the browser to upscale; downscaling is possible which would produce a super sample antialiasing (SSAA) effect (albeit with naive results and a severe performance cost). It is often best to rely upon the MSAA and texture filtering implementations of the user's browser, if available and appropriate, rather than doing it via brute force and hoping that the browser's image reduction algorithm produces a cleaner result. ???
+
+
+
+# 2. Rendering Geometry
+In this chapter:
+
+- Understand how WebGL defines and processes geometric information
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
