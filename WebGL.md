@@ -63,6 +63,39 @@ A canvas will experience scaling when it is rendered at a different resolution t
 In this chapter:
 
 - Understand how WebGL defines and processes geometric information
+- The relevant API methods that relate to geometry manipulation
+- Examine why and how to use JavaScript Object Notation(JSON) to define, store, and load complex geometries
+- Continue our analysis of WebGL as a state machine and describe the attributes relevant to geometry manipulation that can be set and retrieved from the state machine.
+- creating and loading different geometry models
+
+
+## Vertices and Indices
+WebGL handles geometry in a standard way, independently of the complexity and number of points that surfaces can have.
+
+There are two data that are fundamental to represent the geometry of any 3D object: vertices and indices.
+
+- **Vertices**: the points that define the corners of 3D objects. Each vertex is represented by three floating-point numbers that correspond to the x,y and z corrdinates of the vertex. Unlike OpenGL, in WebGL, we need to write all of our vertices in a JavaScript array and then construct a WebGL vertex buffer with it.
+- **Indices**: numeric labels for the vertices in a given 3D scene. Tell WebGL how to connect vertices in order to produce a surface. Indice aro also stored in a JavaScript array and then they are passed along to WebGL's rendering pipeline using a WebGL index buffer.
+
+>There are two kind of WebGL buffers used to describe and process geometry: 
+    - Buffers that contain vertex data are known as **Vertex Buffer Objects(VBOs)**.
+    - Buffers that contain index data are known as **Index Buffer Objects(IBOs)**.
+
+- **Vertex Buffer Objects[VBOs]**: VBOs contain the data that WebGL requires to describe the geometry that is going to be rendered. Vertex coordinates are usually stored and processed in WebGL as VBOs. Additionally, there are several data elements such as vertex normals, colors and texture coordinates, among others, that can be modeled as VBOs.
+
+- **Vertex shader**: The vertex shader is called on each vertex. This shader manipulates *per-vertex data* such as vertex coordinates, normals, colors, and texture coordinates. This data is represented by attributes inside the vertex shader. Each attribute points to a *VBO* from where it reads vertex data.
+
+- **Fragment shader**: Every set of three vertices defines a triangle and each element on the surface of that triangle needs to be assigned a color. Otherwise our surfaces would be transparent.
+    + Each surface element is called a **fragment.** Since we are dealing with surfaces that are going to be displayed on your screen, these elements are more commonly known as pixels.
+    + The main goal of the fragment shader is to calculate the color of individual pixels.
+
+- **Framebuffer**: It is a two-dimensional buffer that contains the fragments that have been processed by the fragment shader. Once all fragments have been processed, a 2D image is formed and displayed on screen. The framebuffer is the final destination of the rendering pipeline.
+
+- **Attributes**: are input variables uses in the vertex shader. For example, vertex coordinates, vertex colors and so on. Due to the fact that the vertex shader is called on each vertex, the attributes will be different every time the vertex shader is invoked.
+- **Uniforms**: are input variables for both the vertex shader and fragment shader. Unlike attributes, uniforms are constant during a rendering cycle. For example, lights position.
+- **Varyings**: are used for passing data from the vertex shader to the fragment shader.
+
+Now let's create a simple geometric object.
 
 
 
