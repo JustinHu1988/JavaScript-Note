@@ -97,13 +97,47 @@ There are two data that are fundamental to represent the geometry of any 3D obje
 
 Now let's create a simple geometric object.
 
+## Rendering geometry in WebGL
+The following are the steps that we will follow in this section to render an object in WebGL:
+1. Define a geometry using JavaScript arrays. 
+2. Create the respective WebGL buffers.
+3. Point a vertex shader attribute to the VBO that we created in the previous step to store vertex coordinates.
+4. Use the IBO to perform the rendering.
 
+### Defining a geometry using JavaScript arrays
+We need two JavaScript arrays: one for the vertices and one for the indices.
 
+### Creating WebGL buffers
+For every buffer, we need to :
+1. Create a new buffer
+2. Bind is to make it the current buffer
+3. Pass the buffer data using one of the typed arrays
+4. Unbind the buffer
 
+```javascript
+var canvas = document.getElementById("canvas");
+var gl = canvas.getContext("webgl");
+//create a buffer
+var myBuffer = gl.createBuffer(); 
+// binds a given WebGLBuffer to a target
+gl.bindBuffer(gl.ARRAY_BUFFER, myBuffer);
+// Initializes and creates the buffer object's data store
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
+// unbind a buffer
+gl.bindBuffer(gl.ARRAY_BUFFER, null);
+```
 
+### Associating attributes to VBOs
 
+### Rendering
+Once we have defined our VBOs and we have mapped then to the corresponding vertex shader attributes, we are ready to render!
+The functions `drawArrays` and `drawElements` are used for writing on the framebuffer.
 
+- **`drawArrays`**: uses vertex data in the order in which it is defined in the buffer to create the geometry.
+- **`drawElements`**: uses indices to access the vertex data buffers and create the geometry. `drawElements` uses indices, therefore vertices are processed just once, and can be used as many times as they are defined in the IBO. This feature reduces both the memory and processing required on the GPU.
+
+Both `drawArrays` and `drawElements` will only use **enabled arrays**. These are the *vertex buffer objects that are mapped to active vertex shader attributes*.
 
 
 
