@@ -129,6 +129,36 @@ gl.bindBuffer(gl.ARRAY_BUFFER, null);
 ```
 
 ### Associating attributes to VBOs
+Once the VBOs have been created, we associate these buffers to vertex shader attributes. Each vertex shader attribute will refer to one and only one buffer, depending on the correspondence that is established. 
+We can achieve this by following these steps:
+####1. First, we bind a VBO that we want to map.
+```javascript
+gl.bindBuffer(gl.ARRAY_BUFFER, myBuffer);
+```
+####2. Next, we point an attribute to the currently bound VBO.
+```javascript
+// next chapter we will learn to define vertex shader attributes.
+//For now, Let's assume that we have the aVertexPosition attribute 
+//and it will represent vertex coordinates inside the vertex shader.
+
+// The WebGL function that allows pointing attributes to the currently
+// bound VBOs is vertexAttribPointer.
+gl.vertexAttribPointer(Index, Size, Type, Norm, Stride, Offset);
+// Index: An attribute's index that we are going to map the currently bound buffer to.
+// Size: Indicates the number of values per vertex that are stored in the currently bound buffer.
+// Type: Specifies the data type of the values stored in the current buffer. It is one of the following constants: FIXED, BYTE, UNSIGNED_BYTE, FLOAT, SHORT, or UNSIGNED_SHORT.
+// Norm: This parameter can be set to true or false. It handles numeric conversions that lie out of the scope of this introductory guide. For all practical effects, we will set this parameter to false.
+// Stride: If stride is zero, then we are indicating that elements are stored sequentially in the buffer.
+// Offset: The position in the buffer from which we will start reading values for the corresponding attribute. It is usually set to zero to indicate that we will start reading values from the first element of the buffer.
+```
+`vertexAttribPointer` defines a pointer for reading information from the currently bound buffer. Remember that an error will be generated if there is no VBO currently bound.
+####3. Finally, we enable the attribute.
+Finally, we just need to activate the vertex shader attribute.
+```javascript
+gl.enableVertexAttribArray(aVertexPosition);
+```
+
+
 
 ### Rendering
 Once we have defined our VBOs and we have mapped then to the corresponding vertex shader attributes, we are ready to render!
@@ -139,16 +169,117 @@ The functions `drawArrays` and `drawElements` are used for writing on the frameb
 
 Both `drawArrays` and `drawElements` will only use **enabled arrays**. These are the *vertex buffer objects that are mapped to active vertex shader attributes*.
 
+#### Using drawElements
+When we use `drawElements`, we need at least two buffers: a VBO and an IBO.
+> When using `drawElements`, you need to make sure that the corresponding IBO is currently bound.
+```javascript
+gl.drawElements(Mode, Count, Type, Offset);
+```
 
 
+### WebGL as a state machine: buffer manipulation
+There is some information about the state of the rendering pipeline that we can retrieve when we are dealing with buffers with the functions: `getParameter`, `getBufferParameter` and `isBuffer`.
 
+We can use `getParameter(parameter)` where parameter can have the following values:
+- `ARRAY_BUFFER_BINDING`: It retrieves a reference to the currently-bound VBO
+- `ELEMENT_ARRAY_BUFFER_BINDING`: It retrieves a reference to the currently-bound IBO
 
+Also, we can enquire about the size and the usage of the currently-bound VBO and IBO using `getBufferParameter(type, parameter)` where `type` can have the following values:
+- ARRAY_BUFFER: To refer to the currently bound VBO
+- ELEMENT_ARRAY_BUFFER: To refer to the currently bound IBO
 
+And `parameter` can be:
+- BUFFER_SIZE: Returns the size of the requested buffer
+- BUFFER_USAGE: Returns the usage of the requested buffer
 
+> Your VBO and/or IBO needs to be bound when you enquire about the state of the currently bound VBO and/or IBO with `getParameter` and `getBufferParameter`.
 
+Finally, `isBuffer(object)` will return `true` if the `object` is a WebGL buffer, `false` when the buffer is invalid, and an error if the `object` being evaluated is not a WebGL buffer. `isBuffer` does not require any VBO or IBO to be bound.
+ 
+ 
+ ## Advanced geometry loading techniques: JavaScript Object Notation(JOSN) and AJAX
+ 
 
+JSON stands for JavaScript Object Notation. It is a lightweight, text-based, open format used for data interchange.
 
+The JSON format is language-agnostic. This means that there are parsers in many languages to read and interpret JSON objects. Also, JSON is a subset of the object of the object literal notation of JavaScript. Therefore, we can define JavaScript objects using JSON.
 
+#### Defining JSON-based 3D models
+Most modern web browsers support native JSON encoding and decoding through the built-in JavaScript object JSON. Let's examine the methods available inside this object:
 
+- `JSON.stringify()`: convert JavaScript objects to JSON-formatted text.
+- `JSON.parse()`: convert text into JavaScript objects.
 
+For example:
+```javascript
+var model = {"vertices":[0,0,0,1,1,1], "indices": [0,1]};
+typeof model; // "object"
+console.log(model.vertices); // [0, 0, 0, 1, 1, 1]
+console.log(model.indices); // [0, 1]
+var text = JSON.stringify(model);
+console.log(text.vertices); // undefined
+typeof text; // "string"
+// because text is not a JavaScript object but a string with
+// the peculiarity of being written according to JSON notation
+// to describe an object. Everything in it is text and therefore
+// it does not have any fields.
+
+// Now let's convert the JSON text back to an object:
+var model2 = JSON.parse(text);
+typeof model2; // "object"
+console.log(model2.vertices); // [0, 0, 0, 1, 1, 1]
+```
+
+#### Asynchronous loading with AJAX
+
+1. **Request file:** First of all, we should indicate the filename that we want to load. Remember that this file contains the geometry that we will be loading from the web server instead of coding the JavaScript arrays directly into the web page.
+2. **AJAX request:** We need to write a function that will perform the AJAX request. Let's call this function `loadFile`. The code can look like this:
+```javascript
+function loadFile(name){
+    var request = new XMLHttpRequest();
+    var resource = 'http://' + document.domain + name;
+    request.open('GET', resource);  // initializes a request
+    request.onreadystatechange = function(){ // An EventHandler that is called whenever the readyState attribute changes.
+        if (request.readyState == 4){ //  XMLHttpRequest.readyState property returns the state an XMLHttpRequest client is in
+            if(request.status == 200 || (request.status==0 && document.domain.length==0)){ // XMLHttpRequest.status property returns the numerical status code of the response of the XMLHttpRequest
+                handleLoadedGeometry(name,JSON.parse(request.responseText)); // XMLHttpRequest.responseText returns a DOMString that contains the response to the request as text, or null if the request was unsuccessful or has not yet been sent.
+            } else {
+                alert("There was a problem loading the file:" + name);
+                alert("HTML error code: " + request.status);
+            }
+        }
+    };
+    request.send(); // Sends the request. If the request is asynchronous (which is the default), this method returns as soon as the request is sent.
+}
+```
+If the readyState is 4, it means that the file has finished downloading.
+
+3. **Retrieve file**: The web server will receive and treat our request as a regular HTTP request. As a matter of fact, the server does not know that this request is asynchronous (it is asynchronous for the web browser as it does not wait for the answer). The server will look for our file and whether it finds it or not, it will generate a response. This will take us to step 4.
+
+4. **Asynchronous response**: Once a response is sent to the web browser, the callback specified in the `loadFile` function is invoked. This callback corresponds to the request method `onreadystatechange`. This method examines the answer.
+Now if we get a 200 status, we can invoke the `handleLoadedGeometry` function.
+
+5. **Handling the loaded model**:In order to keep our code looking pretty, we can create a new function to process the file retrieved from the server. Let's call this handleLoadedGeometry function. In the previous segment of code, we used the JSON parser in order to create a JavaScript object from the file before passing it along to the `handleLoadedGeometry` function.This object corresponds to the second argument(`model`) as we can see here:
+```javascript
+function handleLoadedGeometry(name, model){
+    alert(name + " has been retrieved from the server");
+    modelVertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, modelVertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.vertices), gl.STATIC_DRAW);
+    modelIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, modelIndexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Unit16Array(model.indices), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+    gl.bindBuffer(gl.ARRAY_BUFFER, null);
+}
+```
+Just like `initBuffers`, we bind our VBO and IBO and pass then the information contained in the JavaScript arrays of our `model` object.
+
+#### Setting up a web server
+
+##### Working around the web server requirement
+If you are using Chrome and do not want to install a web server, make sure you run it from the command line with the following modifier:
+```
+--allow-file-access-from-files
+```
 
