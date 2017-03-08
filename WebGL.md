@@ -422,3 +422,142 @@ This means that the `vFinalColor` variable is a varying vector with four compone
 
 ### Operators and functions
 
+ According to the specification: the arithmetic binary operators add (+), subtract (-), multiply (*), and divide (/) operate on integer and floating-point typed expressions (including vectors and matrices). The two operands must be the same type, or one can be a scalar float and the other a float vector or matrix, or one can be a scalar integer and the other an integer vector. Additionally, for multiply (*), one can be a vector and the other a matrix with the same dimensional size of the vector. These result in the same fundamental type (integer or float) as the expressions they operate on. 
+
+  If one operand is a scalar and the other is a vector or a matrix, the scalar is applied component-wise to the vector or the matrix, with the final result being of the same type as the vector or the matrix. Dividing by zero does not cause an exception but does result in an unspecified value.
+ 
+ -  -x: The negative of the x vector. It produces the same vector in the exact  opposite direction. 
+ -  x+y : Sum of the vectors x and y. They need to have the same number  of components. 
+ -  x-y: Subtraction of the vectors x and y. They need to have the same number  of components. 
+ -  x*y: If x and y are both vectors, then this operator yields a component-wise multiplication.  Multiply applied to two matrices return a linear algebraic matrix multiplication, not a component-wise multiplication (for it, you must use the `matrixCompMult` function). 
+ - x/y: The division operator behaves similarly to the multiply operator. 
+ - dot(x,y): Returns the dot product (scalar) of two vectors. They need to have the same dimensions.
+ - cross(vec3 x, vec3 y): Returns the cross product (vector) of two vectors. They have to be vec3.
+ - `matrixCompMult (mat x, mat y)`: Component-wise multiplication of matrices. They need to have the same dimensions (mat2, mat3, or mat4). 
+ - `normalize(x)`: Returns a vector in the same direction but with a length of 1. 
+ - `reflect(t, n)`: Reflects the vector t along the vector n. 
+
+
+There are many more functions including trigonometry and exponential functions. We will refer to those as we need them in the development of the different lighting models.
+
+Let's see now a quick example of the shaders ESSL code for a scene with the following properties:
+
+- **Lambertian reflection model**: We account for the diffuse interaction between one light source and our scene. This means that we will use uniforms to define the light properties, the material properties, and we will follow the *Lambert's Emission Law*  to calculate the final color for every vertex.
+- **Goraud shading**: We will interpolate vertex colors to obtain fragment colors and there fore we need one `varying` to pass the vertex color information between shaders.
+
+Let's dissect first what the attributes, uniforms, and varyings will be. 
+
+### Vertex attributes
+
+We start by defining two attributes in the vertex shader. Every vertex will have:
+```
+attribute vec3 aVertexPosition; 
+attribute vec3 aVertexNormal;
+```
+Right after the attribute keyword, we find the type of the variable. In this case, this is vec3, as each vertex position is determined by three elements (x,y,z). Similarly, the normals are also determined by three elements (x,y,z). Please notice that a position is a point in tridimensional space that tells us where the vertex is, while a normal is a vector that gives us information about the orientation of the surface that passes along that vertex.
+
+Remember that attributes are only available for use inside the vertex shader.
+
+### Uniforms
+Uniforms are available to both the vertex shader and the fragment shader. While attributes are different every time the vertex shader is invoked (remember, we process the vertices in parallel, therefore each copy/thread of the vertex shader processes a different vertex). Uniforms are constant throughout a rendering cycle. That is, during a `drawArrays` or `drawElements` WebGL call.
+
+We can use uniforms to pass along information about lights (such as diffuse color and direction), and materials (diffuse color).
+
+For example:
+```
+    uniform vec3 uLightDirection; // incoming light source direction
+    uniform vec4 uLightDiffuse;   //light diffuse component uniform vec4 uMaterialDiffuse; //material diffuse color
+```
+
+Again, here teh keyword `uniform` tells us that these variables are uniforms and the ESSL types `vec3` and `vec4` tell us that these variables have three or four components.
+
+### Varyings
+We need to carry the vertex color from the vertex shader to the fragment shader:
+
+```
+varying vec4 vFinalColor;
+```
+
+As previously mentioned in the section *Storage Qualifier*, the declaration of varyings need to match between the vertex and fragment shaders.
+
+Now let's plug the attributes, uniforms, and varyings into the code and see how the vertex shader and fragment shader look like.
+
+### Vertex shader
+This is what a vertex shader looks like. On a first look, we identify the attributes, uniforms, and varyings that we will use along with some matrices that we will discuss in a minute. Also we see that the vertex shader has a main function that does not accept parameters and returns void. Inside, we can see some ESSL functions such as normalize and dot and some arithmetical operators.
+
+```
+attribute vec3 aVertexPosition; 
+attribute vec3 aVertexNormal;
+
+uniform mat4 uMVMatrix; 
+uniform mat4 uPMatrix; 
+uniform mat4 uNMatrix;
+
+uniform vec3 uLightDirection; 
+uniform vec4 uLightDiffuse; 
+uniform vec4 uMaterialDiffuse;
+
+varying vec4 vFinalColor;
+
+void main(void) {      
+    vec3 N = normalize(vec3(uNMatrix * vec4(aVertexNormal, 1.0)));    
+    vec3 L = normalize(uLightDirection);        
+
+    float lambertTerm = dot(N,-L);      
+
+    vFinalColor = uMaterialDiffuse * uLightDiffuse * lambertTerm;   
+    vFinalColor.a = 1.0;   
+
+    gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0); 
+}
+```
+
+We can see that there are three 4*4 matrices. **These matrices are required in the vertex shader to calculate the location for vertices and normals whenever we move the camera**. 
+
+There are a couple of operations here that involve using these matrices:
+
+```
+vec3 N = vec3(uNmatrix * vec4(aVertexNormal, 1.0));
+```
+
+The previous line of code calculates the *transformed normal*.
+
+And:
+
+```
+gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+```
+
+This line calculates the *transformed vertex position*. `gl_Position` is a special output variable that stores the transformed vertex position.
+
+We will come back to these operations in Chapter 4, Camera.
+
+
+
+Going back to the code of the main function, we can clearly see that the Lambertian reflection model is being implemented. The dot product of the normalized normal and light direction vector is obtained and then it is multiplied by the light and material diffuse components. Finally, this result is passed into the `vFinalColor` varying to be used in the fragment shader. Also, as we are calculating the color in the vertex shader and then interpolating the vertex colors for the fragments of every triangle, we are using a Goraud interpolation method.
+
+
+### Fragment shader
+
+The fragment shader is very simple. The first three lines define the precision of the shader. This is mandatory according to the ESSL specification. Similarly, to the vertex shader, we define our inputs; in this case, just one varying variable and then we have the main function.
+
+```
+#ifdef GL_SL
+precision highp float;
+#endif
+varying vec4 vFinalColor;
+
+void main(void){
+    gl_FragColor = vFinalColor;
+}
+```
+
+We just need to assign the `vFinalColor` varying to the output variable gl_FragColor.
+
+Remember that the value of the vFinalColor varying will be different from the one calculated in the vertex shader as WebGL will interpolate it by taking the corresponding calculated colors for the vertices surrounding the correspondent fragment (pixel). ???
+
+
+
+## Writing ESSL programs
+
+
