@@ -276,10 +276,149 @@ function handleLoadedGeometry(name, model){
 Just like `initBuffers`, we bind our VBO and IBO and pass then the information contained in the JavaScript arrays of our `model` object.
 
 #### Setting up a web server
+Use nginx.
 
 ##### Working around the web server requirement
 If you are using Chrome and do not want to install a web server, make sure you run it from the command line with the following modifier:
 ```
 --allow-file-access-from-files
 ```
+
+
+# Lights!
+In this chapter, we will:
+
+- learn about light sources, normals, and materials
+- learn the difference between shading and lighting
+- Use the Goraud and Phong shading methods, and the Lambertian and Phong lighting models.
+- Define and use uniforms, attributes, and varyings
+- Work with ESSL, the shading language for WebGL
+- Discuss relevant WebGL API methods that relate to shaders
+- Continue our analysis of WebGL as state machine and describe the attributes relevant to shaders that can be set and retrieved from the state machine
+
+
+## Lights, normals, and materials
+- **lights**:
+    1. positional light: modeled by a point in space (a lamp)
+    2. directional light: modeled with a vector that indicates its direction (sun)
+- **Normals**: 
+    - the methods of calculating normals
+- **Materials**: The material of an object in WebGL can be modeled by several parameters, including its color and its texture(**Texture mapping**).
+
+## Using lights, normals, and materials in the pipeline
+
+Normals are defined on a vertex-per-vertex basis; therefore normals are modeled in WebGL as a VBO and they are mapped using an attribute (aNormalAttribute). (Attributes are never passed to the fragment shader)
+
+Lights and materials are passed as uniforms. Uniforms are available to both the vertex shader and the fragment shader. This gives us a lot of flexibility to calculate our lighting model because we can calculate how the light is reflected on a vertex-by-vertex basis (vertex shader) or on a fragment-per-fragment basis(fragment shader).
+
+> Remember that the vertex shader and fragment shader together are referred to as the **program**.
+
+### Parallelism and the difference between attributes and uniforms
+
+When a draw call is invoked (using `drawArrays` or `drawElements`), the GPU will launch in parallel several copies of the vertex shader. Each copy will receive a different set of attributes. These attributes are drawn from the VBOs that are mapped to the respective attributes.
+
+On the other hand, all the copies of the vertex shaders will receive the same uniforms, therefore teh name, uniform. In other words, uniforms can be seen as constants per draw call.
+
+Once lights, normals, and materials are passed to the program, the next step is to determine which shading and lighting models we will implement.
+
+## Shading methods and light reflection models
+The terms shading and lighting refer to different concepts: 
+
+- shading refers to type of *interpolation* that is performed to obtain the final color for every fragment in the scene.
+- once the shading model is established, the lighting model determines *how* the normals, materials and lights are combined to produce the final color. (Lighting models are also referred to in literature as *reflection models*)
+
+### Shading/interpolation methods
+Two basic types of interpolation method: Goraud and Phong shading.
+#### Goraud interpolation
+- The Goraud interpolation method computes the final color for the vertex shader, using the vertex normals.
+- Then the calculated color for the vertex is carried to the fragment shader using a varying variable. (varying color)
+- Assigns the color for the fragment using the interpolated varying color.
+
+> The interpolation of varyings is automatic in the pipeline. No programming is required.
+
+#### Phong interpolation
+The Phong method calculates the final color in the fragment shader. 
+
+- To do this, each vertex normal is passed along from the vertex shader to the fragment shader using a varying. 
+- Because of the interpolation mechanism of varyings included in the pipeline, each fragment will have its own normal. 
+- Fragment normals are then used to perform the calculation of the final color in the fragment shader.
+
+Again, please note here that the shading method does not specify how the final color for every fragment is calculated. It only specifies where (vertex or fragment shader) and also the type of interpolation(vertex colors or vertex normals).???
+
+### Light reflection models
+The lighting model is independent from the shading/interpolation model. The shading model only determines where the final color is calculated. Now it is time to talk about how to perform such calculations.
+
+#### Lambertian reflection model (理想散射)
+Lambertian reflections are commonly used in computer graphics as a model for diffuse reflections, which are the kind of reflections where an incident light ray is reflected in many angles instead of only in one angle as it is the case for specular reflections.
+
+This lighting model is based on the **cosine emission law**(lambert's emission law).
+(发光强度的空间分布符合余弦定律的发光体（不论是自发光或是反射光），其在不同角度的辐射强度会依余弦公式变化，角度越大强度越弱。)
+>(计算方法有待学习)
+
+#### Phong reflection model (Phong反射)
+Tht sum of three types of reflection: ambient（环境）, diffuse（散射）, specular(镜面).
+
+- ambient: amount of light present everywhere in the scene. Independent from any light source;
+- diffuse: The incident light is reflected in many directions. It can be modeled by a Lambertian surface.
+- specular: Mirror-like reflection. The direction of the incoming light and the direction of the reflected outgoing light make the same angle with respect to the surface normal.
+
+>**How to calculate specular**
+This is modeled by the *dot product(数量积)* of two vectors, namely, the *eye vector* and the *reflected light-direction vector*.  
+eye vector: has its origin in the fragment and its end in the view position(camera).
+The reflected light-direction vector is obtained by reflecting
+the light-direction vector upon the surface normal vector. When this dot product equals 1 (by working with normalized vectors) then our camera will capture the maximum specular reflection.???  
+The dot product is then exponentiated by a number that represents the shininess of the surface. After that, the result is multiplied by the light and material specular components.???
+
+
+
+The ambient, diffuse, and specular terms are added to find the final color of the fragment.
+
+Now it is time for us to learn the language that will allow us to implement the shading and lighting strategies inside the vertex and fragment shaders. This language is called **ESSL**.
+
+
+## ESSL--OpenGL ES Shading Language
+OpenGL ES Shading Language (ESSL) is the language in which we write our shaders. Its syntax and semantics are very similar to C/C++. However, it has types and built-in functions that make it easier and more intuitive to manipulate vectors and matrices.
+
+> This section is a summary of the official GLSL ES specification. It is a subset of GLSL (OpenGL Shading Language).
+
+### Storage qualifier(存储限定符)
+Variable declarations may have a storage qualifier specified in front of the type:
+
+- **attribute**: Linkage between a vertex shader and a WebGL application for per-vertex data. This storage qualifier is only legal inside the vertex shader.
+- **uniform**: Value does not change across the object being processed, and uniforms form the linkage between a shader and a WebGL application. Uniforms are legal in both the vertex and fragment shaders. If a uniform is shared by the vertex and fragment shader, the respective declarations need to match.
+- **varying**: Linkage between a vertex shader and a fragment shader for interpolated data. By definition, varyings are necessarily shared by the vertex shader and the fragment shader. The declaration of varyings needs to match between the vertex and fragment shaders.
+- **const**: a compile-time constant, or a function parameter that is read-only. They can be used anywhere in the code of an ESSL program.
+
+### Types
+ESSL provide the following basic types:
+
+- `void`: For functions that do not return a value or for an empty parameter list
+- `bool`: A conditional type, taking on values of true or false
+- `int`: A signed integer
+- `float`: A single floating-point scalar
+- `vec2`: A two component floating-point vector
+- `vec3`: A three component floating-point vector
+- `vec4`: A four component floating-point vector
+- `bvec2`: A two component boolean vector
+- `bvec3`: A three component boolean vector
+- `bvec4`: A four component boolean vector
+- `ivec2`: A two component integer vector
+- `ivec3`: A three component integer vector
+- `ivec4`: A four component integer vector
+- `mat2`: A 2*2 floating-point matrix
+- `mat3`: A 3*3 floating-point matrix
+- `mat4`: A 4*4 floating-point matrix
+- `sampler2D`: A handle for accessing a 2D texture
+- `samplerCube`: A handle for accessing a cube mapped texture
+
+So an input variable will have one of the four qualifiers followed by one type. For example, we will declare our vFinalColor varying as follows:
+```
+varying vec4 vFinalColor;
+```
+This means that the `vFinalColor` variable is a varying vector with four components.
+
+### Vector components
+ 
+
+### Operators and functions
 
