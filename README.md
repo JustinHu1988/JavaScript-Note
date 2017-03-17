@@ -8,3 +8,4 @@ These notes mainly from following books and websites:
 - WebGL Beginner's Guide
 - Single Page Web Applications
 - Learning JavaScript Data Structures and Algorithms, 2nd Edition
+- Understanding ECMAScript 6
