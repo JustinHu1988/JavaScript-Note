@@ -1,5 +1,10 @@
-# JavaScript-Note-Chinese-version
-My JavaScript learning note, write by Chinese.  
-这是对于JS基本原理进行学习理解过程中记录的笔记，有利于再度查找相关内容。
+# JavaScript-Note
+My JavaScript learning note.  
 
-测试一下branch
+These notes mainly from following books and websites:
+
+- Professional JavaScript for Web Developers, 3rd Edition
+- Mozilla Developer Network
+- WebGL Beginner's Guide
+- Single Page Web Applications
+- Learning JavaScript Data Structures and Algorithms, 2nd Edition
