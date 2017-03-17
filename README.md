@@ -1,7 +1,7 @@
 # JavaScript-Note
 My JavaScript learning note.  
 
-These notes mainly from following books and websites:
+These notes mainly come from following books and websites:
 
 - Professional JavaScript for Web Developers, 3rd Edition
 - Mozilla Developer Network
