@@ -57,3 +57,49 @@ How true and false work in JavaScript:
 - toNumber(Number) // This is the value of the number
 - toNumber(String) // This parses the string into a number.
 
+
+
+
+
+
+
+
+## Control structures
+
+- Conditional statements: `if else`, `switch`;
+- Loops: `while`, `do while`, `for`;
+
+### Conditional statement  
+
+
+```javascript
+let movie = "Lord of the Rings";
+function starWarsFan(){
+    let movie = "Star Wars";
+    return movie;
+}
+function marvelFan(){
+    movie = "The Avengers";
+    return movie;
+}
+function blizzardFan(){
+    let isFan = true;
+    let phrase = "Warcraft";
+    console.log("Before if: " + phrase);
+    if(isFan){
+        let phrase = "initial text";
+        phrase = "For the Horde!";
+        console.log("Inside if: " + phrase);
+    }
+    phrase = "For the Alliance!";
+    console.log("After if: " + phrase);
+}
+
+console.log(movie); // "The Avengers"
+console.log(starWarsFan()); // "Lord of the Rings"
+console.log(marvelFan()); // 
+console.log(movie); // "Star Wars"
+blizzardFan();
+
+
+```
