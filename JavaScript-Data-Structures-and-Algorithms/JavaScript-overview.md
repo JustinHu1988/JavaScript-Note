@@ -95,11 +95,11 @@ function blizzardFan(){
     console.log("After if: " + phrase);
 }
 
+console.log(movie); // "Lord of the Rings"
+console.log(starWarsFan()); // "Star Wars"
+console.log(marvelFan()); // "The Avengers"
 console.log(movie); // "The Avengers"
-console.log(starWarsFan()); // "Lord of the Rings"
-console.log(marvelFan()); // 
-console.log(movie); // "Star Wars"
-blizzardFan();
+blizzardFan(); 
 
 
 ```
