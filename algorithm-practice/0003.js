@@ -13,7 +13,6 @@ var lexicalOrder = function(n) {
     let countNum = bitbase;
     let finalArr = [];
     let tempN =n;
-
     function addArray(){
         let temNum=countNum;
         if(temNum % 10 === 0){
@@ -31,7 +30,7 @@ var lexicalOrder = function(n) {
         if(countNum<tempN+1){
             return addArray();
         }else if(countNum===n+1){
-            if(bitbase % 10 === 0){
+            if(bitbase % 10 === 0 && (n+1)/10 !== midNum){
                 countNum = midNum;
                 tempN = bitbase-1;
                 return addArray();
@@ -45,3 +44,4 @@ var lexicalOrder = function(n) {
     addArray();
     return finalArr;
 };
+lexicalOrder(5678);
